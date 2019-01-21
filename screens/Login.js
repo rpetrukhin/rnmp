@@ -12,6 +12,7 @@ import {
 
 import CustomText from '../components/CustomText';
 import CustomTextAnimated from '../components/CustomTextAnimated';
+import endpoints from '../consts/endpoints';
 
 import styles from '../assets/styles/Login.style';
 import { limeGreen, limeGreenDark } from '../assets/styles/epamStyles';
@@ -35,11 +36,17 @@ export default class Login extends Component {
 	}
 
 	componentDidMount() {
-		NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionLoss);
+		NetInfo.isConnected.addEventListener(
+			'connectionChange',
+			this.handleConnectionLoss
+		);
 	}
 
 	componentWillUnmount() {
-		NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectionLoss);
+		NetInfo.isConnected.removeEventListener(
+			'connectionChange',
+			this.handleConnectionLoss
+		);
 	}
 
 	initLoginAnimationParams() {
@@ -53,7 +60,7 @@ export default class Login extends Component {
 	initLoginAnimationProcess() {
 		const duration1 = 300;
 		const duration2 = 400;
-		const heightDotRise = -5;
+		const heightDotRise = -7;
 
 		this.loginAnimationProcess = Animated.sequence([
 			Animated.parallel([
@@ -130,6 +137,12 @@ export default class Login extends Component {
 		this.initLoginAnimationProcess();
 	}
 
+	async waitForLoginAnimationThenStopAndResetIt() {
+		await new Promise(resolve => setTimeout(resolve, 1500));
+		this.loginAnimationProcess.stop();
+		this.resetLoginAnimationParams();
+	}
+
 	handleConnectionLoss = isConnected => {
 		if (!isConnected) {
 			this.networkConnectionLoss = true;
@@ -146,7 +159,7 @@ export default class Login extends Component {
 		this.setState({ password: value, wrongCredentials: false });
 	};
 
-	login = () => {
+	login = async () => {
 		if (!this.networkConnectionLoss) {
 			this.setState({ isFetching: true });
 
@@ -157,35 +170,36 @@ export default class Login extends Component {
 				password: this.state.password,
 			};
 
-			fetch('http://ecsc00a02fb3.epam.com/index.php/rest/V1/integration/customer/token', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(body),
-			})
-				.then(res => res.json())
-				.finally(async data => {
-					await new Promise(resolve => setTimeout(resolve, 1500));
-					this.loginAnimationProcess.stop();
-					this.resetLoginAnimationParams();
-					return data;
-				})
-				.then(data => {
-					if (!data.message) {
-						NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectionLoss);
-						this.props.navigation.navigate('Main');
-					} else {
-						LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-						this.setState({ wrongCredentials: true });
-					}
-				})
-				.catch(err => {
-					this.setState({ networkError: true });
-				})
-				.finally(() => {
-					this.setState({ isFetching: false });
+			try {
+				const response = await fetch(endpoints.login, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(body),
 				});
+
+				const data = await response.json();
+
+				await this.waitForLoginAnimationThenStopAndResetIt();
+
+				if (!data.message) {
+					NetInfo.isConnected.removeEventListener(
+						'connectionChange',
+						this.handleConnectionLoss
+					);
+					this.props.navigation.navigate('Main');
+				} else {
+					LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+					this.setState({ wrongCredentials: true });
+				}
+			} catch (err) {
+				await this.waitForLoginAnimationThenStopAndResetIt();
+
+				this.setState({ networkError: true });
+			} finally {
+				this.setState({ isFetching: false });
+			}
 		} else {
 			this.setState({ networkError: true });
 		}
@@ -220,7 +234,10 @@ export default class Login extends Component {
 			<Animated.View
 				style={[
 					styles.loginButtonContainer,
-					{ width: loginButtonContainerWidth, backgroundColor: loginBackgroundColor },
+					{
+						width: loginButtonContainerWidth,
+						backgroundColor: loginBackgroundColor,
+					},
 				]}
 			>
 				<TouchableOpacity
@@ -228,17 +245,31 @@ export default class Login extends Component {
 					onPress={this.login}
 					disabled={this.state.isFetching}
 				>
-					<CustomTextAnimated style={[styles.loginButtonText, { opacity: loginButtonTextOpacity }]}>
+					<CustomTextAnimated
+						style={[
+							styles.loginButtonText,
+							{ opacity: loginButtonTextOpacity },
+						]}
+					>
 						login
 					</CustomTextAnimated>
 					<Animated.View
-						style={[styles.loginButtonDotsContainer, { opacity: this.loginDotsInitialOpacity }]}
+						style={[
+							styles.loginButtonDotsContainer,
+							{ opacity: this.loginDotsInitialOpacity },
+						]}
 					>
 						<Animated.View
-							style={[styles.loginButtonDot, { transform: [{ translateY: this.dot1 }] }]}
+							style={[
+								styles.loginButtonDot,
+								{ transform: [{ translateY: this.dot1 }] },
+							]}
 						/>
 						<Animated.View
-							style={[styles.loginButtonDot, { transform: [{ translateY: this.dot2 }] }]}
+							style={[
+								styles.loginButtonDot,
+								{ transform: [{ translateY: this.dot2 }] },
+							]}
 						/>
 						<Animated.View
 							style={[
@@ -255,10 +286,15 @@ export default class Login extends Component {
 	render() {
 		return (
 			<View style={styles.container}>
-				<Image source={require('../assets/images/smile.png')} style={styles.logo} />
+				<Image
+					source={require('../assets/images/smile.png')}
+					style={styles.logo}
+				/>
 				<CustomText style={styles.title}>Friday's shop</CustomText>
 				{this.state.wrongCredentials && (
-					<CustomText style={styles.wrongCredentials}>Invalid email or password</CustomText>
+					<CustomText style={styles.wrongCredentials}>
+						Invalid email or password
+					</CustomText>
 				)}
 				<TextInput
 					style={styles.input}
@@ -286,11 +322,19 @@ export default class Login extends Component {
 								Please check your network connection
 							</CustomText>
 							<View style={styles.modalButtonContainer}>
-								<TouchableOpacity onPress={this.closeModal} style={styles.closeButton}>
-									<CustomText>Close</CustomText>
+								<TouchableOpacity
+									onPress={this.closeModal}
+									style={styles.modalButton}
+								>
+									<CustomText style={styles.modalButtonText}>Close</CustomText>
 								</TouchableOpacity>
-								<TouchableOpacity onPress={this.tryLoginAgain} style={styles.tryAgainButton}>
-									<CustomText>Try again</CustomText>
+								<TouchableOpacity
+									onPress={this.tryLoginAgain}
+									style={styles.modalButton}
+								>
+									<CustomText style={styles.modalButtonText}>
+										Try again
+									</CustomText>
 								</TouchableOpacity>
 							</View>
 						</View>

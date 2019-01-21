@@ -8,7 +8,10 @@ export default class CustomText extends Component {
 		return (
 			<Animated.Text
 				{...this.props}
-				style={[{ fontFamily: 'vincHand', color: graphite }, ...this.props.style]}
+				style={[
+					{ fontFamily: 'vincHand', color: graphite },
+					...this.props.style,
+				]}
 			>
 				{this.props.children}
 			</Animated.Text>

@@ -29,11 +29,13 @@ export default StyleSheet.create({
 		backgroundColor: limeGreen,
 	},
 	loginButton: {
+		height: 50,
 		width: '100%',
 		alignItems: 'center',
+		justifyContent: 'center',
 	},
 	loginButtonText: {
-		fontSize: 20,
+		fontSize: 25,
 	},
 	loginButtonDotsContainer: {
 		position: 'absolute',
@@ -65,19 +67,16 @@ export default StyleSheet.create({
 	},
 	modalButtonContainer: {
 		flexDirection: 'row',
-		justifyContent: 'flex-end',
+		justifyContent: 'space-between',
 		marginTop: 30,
 	},
-	closeButton: {
-		width: '20%',
+	modalButton: {
+		width: '45%',
 		backgroundColor: limeGreen,
 		alignItems: 'center',
 	},
-	tryAgainButton: {
-		width: '20%',
-		marginLeft: 15,
-		backgroundColor: limeGreen,
-		alignItems: 'center',
+	modalButtonText: {
+		fontSize: 20,
 	},
 	wrongCredentials: {
 		color: coral,

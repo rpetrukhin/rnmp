@@ -3,6 +3,7 @@ import { View, FlatList } from 'react-native';
 
 import CustomText from '../components/CustomText';
 import Product from '../components/Product';
+import endpoints from '../consts/endpoints';
 
 import styles from '../assets/styles/Products.style';
 
@@ -23,14 +24,9 @@ export default class Products extends Component {
 	getProducts = () => {
 		if (this.state.offset < this.state.totalItems) {
 			this.setState({ refreshing: true });
-			fetch(
-				`http://ecsc00a02fb3.epam.com/rest/V1/products?searchCriteria[pageSize]=${NUMBER_OF_PRODUCTS}&searchCriteria[currentPage]=${
-					this.state.offset
-				}`,
-				{
-					method: 'GET',
-				}
-			)
+			fetch(endpoints.products(NUMBER_OF_PRODUCTS, this.state.offset), {
+				method: 'GET',
+			})
 				.then(res => res.json())
 				.then(data => {
 					this.setState(prevState => {
