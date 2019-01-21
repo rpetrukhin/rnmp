@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-               BuildableName = "LayoutAndStyleAdvanced-tvOS.app"
-               BlueprintName = "LayoutAndStyleAdvanced-tvOS"
-               ReferencedContainer = "container:LayoutAndStyleAdvanced.xcodeproj">
+               BuildableName = "Shop-tvOS.app"
+               BlueprintName = "Shop-tvOS"
+               ReferencedContainer = "container:Shop.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -43,9 +43,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E48F1E0B4A5D006451C7"
-               BuildableName = "LayoutAndStyleAdvanced-tvOSTests.xctest"
-               BlueprintName = "LayoutAndStyleAdvanced-tvOSTests"
-               ReferencedContainer = "container:LayoutAndStyleAdvanced.xcodeproj">
+               BuildableName = "Shop-tvOSTests.xctest"
+               BlueprintName = "Shop-tvOSTests"
+               ReferencedContainer = "container:Shop.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -61,9 +61,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2D02E48F1E0B4A5D006451C7"
-               BuildableName = "LayoutAndStyleAdvanced-tvOSTests.xctest"
-               BlueprintName = "LayoutAndStyleAdvanced-tvOSTests"
-               ReferencedContainer = "container:LayoutAndStyleAdvanced.xcodeproj">
+               BuildableName = "Shop-tvOSTests.xctest"
+               BlueprintName = "Shop-tvOSTests"
+               ReferencedContainer = "container:Shop.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -71,9 +71,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "LayoutAndStyleAdvanced-tvOS.app"
-            BlueprintName = "LayoutAndStyleAdvanced-tvOS"
-            ReferencedContainer = "container:LayoutAndStyleAdvanced.xcodeproj">
+            BuildableName = "Shop-tvOS.app"
+            BlueprintName = "Shop-tvOS"
+            ReferencedContainer = "container:Shop.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -94,9 +94,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "LayoutAndStyleAdvanced-tvOS.app"
-            BlueprintName = "LayoutAndStyleAdvanced-tvOS"
-            ReferencedContainer = "container:LayoutAndStyleAdvanced.xcodeproj">
+            BuildableName = "Shop-tvOS.app"
+            BlueprintName = "Shop-tvOS"
+            ReferencedContainer = "container:Shop.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -113,9 +113,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2D02E47A1E0B4A5D006451C7"
-            BuildableName = "LayoutAndStyleAdvanced-tvOS.app"
-            BlueprintName = "LayoutAndStyleAdvanced-tvOS"
-            ReferencedContainer = "container:LayoutAndStyleAdvanced.xcodeproj">
+            BuildableName = "Shop-tvOS.app"
+            BlueprintName = "Shop-tvOS"
+            ReferencedContainer = "container:Shop.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

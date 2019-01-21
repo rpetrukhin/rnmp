@@ -1,4 +1,4 @@
-package com.layoutandstyleadvanced;
+package com.shop;
 
 import android.app.Application;
 
