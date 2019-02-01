@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, FlatList } from 'react-native';
+import { View, FlatList, NetInfo, Vibration, Modal } from 'react-native';
 
 import CustomText from '../components/CustomText';
 import Product from '../components/Product';
@@ -15,10 +15,42 @@ export default class Products extends Component {
 		refreshing: false,
 		offset: 0,
 		totalItems: 1,
+		networkConnectionLoss: false,
 	};
 
-	componentDidMount() {
+	async componentDidMount() {
 		this.getProducts();
+
+		NetInfo.isConnected.addEventListener(
+			'connectionChange',
+			this.handleConnectionLoss
+		);
+
+		const isConnected = await NetInfo.isConnected.fetch();
+		if (!isConnected) {
+			Vibration.vibrate(1000);
+			this.setState({ networkConnectionLoss: true });
+		}
+	}
+
+	componentWillUnmount() {
+		NetInfo.isConnected.removeEventListener(
+			'connectionChange',
+			this.handleConnectionLoss
+		);
+	}
+
+	handleConnectionLoss = isConnected => {
+		if (!isConnected) {
+			Vibration.vibrate(1000);
+			this.setState({ networkConnectionLoss: true });
+		} else {
+			this.setState({ networkConnectionLoss: false });
+		}
+	};
+
+	empty() {
+		return;
 	}
 
 	getProducts = () => {
@@ -86,6 +118,20 @@ export default class Products extends Component {
 					onEndReachedThreshold={0.5}
 					onEndReached={this.getProducts}
 				/>
+				<Modal
+					animationType="fade"
+					transparent={true}
+					visible={this.state.networkConnectionLoss}
+					onRequestClose={this.empty}
+				>
+					<View style={styles.modalContainer}>
+						<View style={styles.modalContent}>
+							<CustomText style={styles.errorMessage}>
+								Please turn your network connection on
+							</CustomText>
+						</View>
+					</View>
+				</Modal>
 			</View>
 		);
 	}

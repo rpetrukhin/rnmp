@@ -8,6 +8,8 @@ import {
 	NetInfo,
 	LayoutAnimation,
 	Animated,
+	Vibration,
+	AsyncStorage,
 } from 'react-native';
 
 import CustomText from '../components/CustomText';
@@ -27,19 +29,36 @@ export default class Login extends Component {
 			networkError: false,
 			wrongCredentials: false,
 			isFetching: false,
+			networkConnectionLoss: false,
 		};
-
-		this.networkConnectionLoss = false;
 
 		this.initLoginAnimationParams();
 		this.initLoginAnimationProcess();
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
+		try {
+			const credentials = JSON.parse(
+				await AsyncStorage.getItem('@ShopStore:credentials')
+			);
+			if (credentials !== null) {
+				this.setState({
+					email: credentials.username,
+					password: credentials.password,
+				});
+			}
+		} catch (err) {}
+
 		NetInfo.isConnected.addEventListener(
 			'connectionChange',
 			this.handleConnectionLoss
 		);
+
+		const isConnected = await NetInfo.isConnected.fetch();
+		if (!isConnected) {
+			Vibration.vibrate(1000);
+			this.setState({ networkConnectionLoss: true });
+		}
 	}
 
 	componentWillUnmount() {
@@ -145,9 +164,10 @@ export default class Login extends Component {
 
 	handleConnectionLoss = isConnected => {
 		if (!isConnected) {
-			this.networkConnectionLoss = true;
+			Vibration.vibrate(1000);
+			this.setState({ networkConnectionLoss: true });
 		} else {
-			this.networkConnectionLoss = false;
+			this.setState({ networkConnectionLoss: false });
 		}
 	};
 
@@ -160,48 +180,55 @@ export default class Login extends Component {
 	};
 
 	login = async () => {
-		if (!this.networkConnectionLoss) {
-			this.setState({ isFetching: true });
+		this.setState({ isFetching: true });
 
-			this.loginAnimationProcess.start();
+		this.loginAnimationProcess.start();
 
-			const body = {
-				username: this.state.email,
-				password: this.state.password,
-			};
+		const body = {
+			username: this.state.email,
+			password: this.state.password,
+		};
 
-			try {
-				const response = await fetch(endpoints.login, {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(body),
-				});
+		try {
+			const response = await fetch(endpoints.login, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(body),
+			});
 
-				const data = await response.json();
+			const data = await response.json();
 
-				await this.waitForLoginAnimationThenStopAndResetIt();
+			await this.waitForLoginAnimationThenStopAndResetIt();
 
-				if (!data.message) {
-					NetInfo.isConnected.removeEventListener(
-						'connectionChange',
-						this.handleConnectionLoss
+			if (!data.message) {
+				try {
+					await AsyncStorage.setItem(
+						'@ShopStore:credentials',
+						JSON.stringify(body)
 					);
-					this.props.navigation.navigate('Main');
-				} else {
-					LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-					this.setState({ wrongCredentials: true });
-				}
-			} catch (err) {
-				await this.waitForLoginAnimationThenStopAndResetIt();
+				} catch (err) {}
 
-				this.setState({ networkError: true });
-			} finally {
-				this.setState({ isFetching: false });
+				NetInfo.isConnected.removeEventListener(
+					'connectionChange',
+					this.handleConnectionLoss
+				);
+
+				this.props.navigation.navigate('Main');
+			} else {
+				LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+
+				Vibration.vibrate(1000);
+				this.setState({ wrongCredentials: true });
 			}
-		} else {
+		} catch (err) {
+			await this.waitForLoginAnimationThenStopAndResetIt();
+
+			Vibration.vibrate(1000);
 			this.setState({ networkError: true });
+		} finally {
+			this.setState({ isFetching: false });
 		}
 	};
 
@@ -213,6 +240,10 @@ export default class Login extends Component {
 		this.closeModal();
 		this.login();
 	};
+
+	empty() {
+		return;
+	}
 
 	renderLoginButton() {
 		const loginButtonContainerWidth = this.loginButtonInitialWidth.interpolate({
@@ -337,6 +368,20 @@ export default class Login extends Component {
 									</CustomText>
 								</TouchableOpacity>
 							</View>
+						</View>
+					</View>
+				</Modal>
+				<Modal
+					animationType="fade"
+					transparent={true}
+					visible={this.state.networkConnectionLoss}
+					onRequestClose={this.empty}
+				>
+					<View style={styles.modalContainer}>
+						<View style={styles.modalContent}>
+							<CustomText style={styles.errorMessage}>
+								Please turn your network connection on
+							</CustomText>
 						</View>
 					</View>
 				</Modal>
