@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { limeGreen } from './epamStyles';
+import { limeGreen, coral } from './epamStyles';
 
 export default StyleSheet.create({
 	borderTop: {
@@ -49,4 +49,8 @@ export default StyleSheet.create({
 		borderBottomWidth: 1,
 		marginBottom: '25%',
 	},
+	errorButton: {
+		backgroundColor: coral,
+		borderColor: coral,
+	}
 });
