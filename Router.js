@@ -7,6 +7,7 @@ import {
 import Login from './screens/Login';
 import Products from './screens/Products';
 import ProductItem from './screens/ProductItem';
+import Welcome from './screens/Welcome';
 
 const stackNav = createStackNavigator(
 	{
@@ -23,6 +24,7 @@ const stackNav = createStackNavigator(
 
 const switchNav = createSwitchNavigator(
 	{
+		Welcome: Welcome,
 		Login: Login,
 		Main: stackNav,
 	},

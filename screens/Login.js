@@ -11,6 +11,7 @@ import {
 	Vibration,
 	AsyncStorage,
 } from 'react-native';
+import SplashScreen from 'react-native-splash-screen'
 
 import CustomText from '../components/CustomText';
 import CustomTextAnimated from '../components/CustomTextAnimated';
@@ -53,6 +54,9 @@ export default class Login extends Component {
 			'connectionChange',
 			this.handleConnectionLoss
 		);
+
+		await new Promise(resolve => setTimeout(resolve, 2000));
+		SplashScreen.hide();
 
 		const isConnected = await NetInfo.isConnected.fetch();
 		if (!isConnected) {
@@ -215,7 +219,7 @@ export default class Login extends Component {
 					this.handleConnectionLoss
 				);
 
-				this.props.navigation.navigate('Main');
+				this.props.navigation.navigate('Welcome');
 			} else {
 				LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 
