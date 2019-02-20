@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { Sentry } from 'react-native-sentry';
+import { connect } from 'react-redux';
 
 import CustomText from '../components/CustomText';
 import CustomTextAnimated from '../components/CustomTextAnimated';
@@ -20,8 +21,9 @@ import endpoints from '../consts/endpoints';
 
 import styles from '../assets/styles/Login.style';
 import { limeGreen, limeGreenDark } from '../assets/styles/epamStyles';
+import { saveToken } from '../actions/tokenAction';
 
-export default class Login extends Component {
+class Login extends Component {
 	constructor() {
 		super();
 
@@ -219,6 +221,8 @@ export default class Login extends Component {
 
 				Sentry.setUserContext({ username: body.username });
 
+				this.props.saveToken(data);
+
 				this.props.navigation.navigate('Welcome');
 			} else {
 				LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
@@ -391,3 +395,10 @@ export default class Login extends Component {
 		);
 	}
 }
+
+const mapDispatchToProps = { saveToken };
+
+export default connect(
+	null,
+	mapDispatchToProps
+)(Login);

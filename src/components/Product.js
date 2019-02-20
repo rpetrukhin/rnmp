@@ -7,7 +7,11 @@ import styles from '../assets/styles/Product.style';
 
 export default class Product extends Component {
 	showDetails = () => {
-		this.props.showDetails(this.props.name, this.props.imageSource);
+		this.props.showDetails(
+			this.props.name,
+			this.props.sku,
+			this.props.imageSource
+		);
 	};
 
 	render() {

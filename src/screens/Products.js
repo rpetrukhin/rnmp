@@ -1,15 +1,26 @@
 import React, { Component } from 'react';
 import { View, FlatList, NetInfo, Vibration, Modal } from 'react-native';
+import { connect } from 'react-redux';
 
 import CustomText from '../components/CustomText';
 import Product from '../components/Product';
 import endpoints from '../consts/endpoints';
+import { setProductsNumber } from '../actions/productsNumberAction';
 
 import styles from '../assets/styles/Products.style';
 
 const NUMBER_OF_PRODUCTS = 20;
 
-export default class Products extends Component {
+const IMAGE_SOURCES = [
+	require('../assets/images/camera.png'),
+	require('../assets/images/football-ball.png'),
+	require('../assets/images/gift.png'),
+	require('../assets/images/plus.png'),
+	require('../assets/images/smile.png'),
+	require('../assets/images/star.png'),
+];
+
+class Products extends Component {
 	state = {
 		data: [],
 		refreshing: false,
@@ -18,7 +29,11 @@ export default class Products extends Component {
 		networkConnectionLoss: false,
 	};
 
+	quoteId = null;
+
 	async componentDidMount() {
+		this.getCart();
+
 		this.getProducts();
 
 		NetInfo.isConnected.addEventListener(
@@ -61,6 +76,10 @@ export default class Products extends Component {
 			})
 				.then(res => res.json())
 				.then(data => {
+					data.items.forEach(el => {
+						const randomNumber = Math.floor(6 * Math.random());
+						el.imageSource = IMAGE_SOURCES[randomNumber];
+					});
 					this.setState(prevState => {
 						return {
 							...prevState,
@@ -71,11 +90,48 @@ export default class Products extends Component {
 					});
 				})
 				.catch(err => {
-					this.setState({ error: true, errorMessage: err.message });
+					console.log(err);
 				})
 				.then(() => this.setState({ refreshing: false }));
 		}
 	};
+
+	getCart() {
+		fetch(endpoints.cart, {
+			method: 'POST',
+			body: null,
+			headers: {
+				Authorization: `Bearer ${this.props.token}`,
+				'Content-Type': 'application/json',
+			},
+		})
+			.then(res => res.json())
+			.then(data => {
+				this.quoteId = data;
+			})
+			.catch(err => {
+				console.log(err);
+			});
+
+		fetch(endpoints.itemsInCart, {
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${this.props.token}`,
+				'Content-Type': 'application/json',
+			},
+		})
+			.then(res => res.json())
+			.then(data => {
+				const productsNumber = data.reduce(
+					(accumulator, currentValue) => accumulator + currentValue.qty,
+					0
+				);
+				this.props.setProductsNumber(productsNumber);
+			})
+			.catch(err => {
+				console.log(err);
+			});
+	}
 
 	refresh = () => {
 		this.setState(
@@ -88,18 +144,21 @@ export default class Products extends Component {
 		);
 	};
 
-	showDetails = (name, imageSource) => {
+	showDetails = (name, sku, imageSource) => {
 		this.props.navigation.navigate('ProductItem', {
 			title: name,
 			imageSource: imageSource,
+			quoteId: this.quoteId,
+			sku: sku,
 		});
 	};
 
 	renderItem = item => {
 		return (
 			<Product
-				imageSource={require('../assets/images/map.png')}
+				imageSource={item.imageSource}
 				name={item.name}
+				sku={item.sku}
 				showDetails={this.showDetails}
 			/>
 		);
@@ -136,3 +195,16 @@ export default class Products extends Component {
 		);
 	}
 }
+
+const mapStateToProps = state => {
+	return {
+		token: state.tokenStore.token,
+	};
+};
+
+const mapDispatchToProps = { setProductsNumber };
+
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(Products);

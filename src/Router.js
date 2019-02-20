@@ -8,11 +8,13 @@ import Login from './screens/Login';
 import Products from './screens/Products';
 import ProductItem from './screens/ProductItem';
 import Welcome from './screens/Welcome';
+import Cart from './screens/Cart';
 
 const stackNav = createStackNavigator(
 	{
 		Products,
 		ProductItem,
+		Cart,
 	},
 	{
 		initialRouteName: 'Products',
