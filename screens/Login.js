@@ -11,7 +11,8 @@ import {
 	Vibration,
 	AsyncStorage,
 } from 'react-native';
-import SplashScreen from 'react-native-splash-screen'
+import SplashScreen from 'react-native-splash-screen';
+import { Sentry } from 'react-native-sentry';
 
 import CustomText from '../components/CustomText';
 import CustomTextAnimated from '../components/CustomTextAnimated';
@@ -32,6 +33,8 @@ export default class Login extends Component {
 			isFetching: false,
 			networkConnectionLoss: false,
 		};
+
+		Sentry.setTagsContext({ something: 'interesting' });
 
 		this.initLoginAnimationParams();
 		this.initLoginAnimationProcess();
@@ -214,25 +217,20 @@ export default class Login extends Component {
 					);
 				} catch (err) {}
 
-				NetInfo.isConnected.removeEventListener(
-					'connectionChange',
-					this.handleConnectionLoss
-				);
+				Sentry.setUserContext({ username: body.username });
 
 				this.props.navigation.navigate('Welcome');
 			} else {
 				LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
 
 				Vibration.vibrate(1000);
-				this.setState({ wrongCredentials: true });
+				this.setState({ wrongCredentials: true, isFetching: false });
 			}
 		} catch (err) {
 			await this.waitForLoginAnimationThenStopAndResetIt();
 
 			Vibration.vibrate(1000);
-			this.setState({ networkError: true });
-		} finally {
-			this.setState({ isFetching: false });
+			this.setState({ networkError: true, isFetching: false });
 		}
 	};
 

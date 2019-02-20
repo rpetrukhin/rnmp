@@ -10,6 +10,10 @@ export default class ProductItem extends Component {
 		this.props.navigation.goBack();
 	};
 
+	throwError = () => {
+		throw new Error('Hello Sentry');
+	};
+
 	render() {
 		return (
 			<ScrollView>
@@ -43,6 +47,12 @@ export default class ProductItem extends Component {
 				</View>
 				<TouchableOpacity onPress={this.goBack} style={styles.button}>
 					<CustomText style={styles.buttonText}>All Products</CustomText>
+				</TouchableOpacity>
+				<TouchableOpacity
+					onPress={this.throwError}
+					style={[styles.button, styles.errorButton]}
+				>
+					<CustomText style={styles.buttonText}>Error button</CustomText>
 				</TouchableOpacity>
 				<View style={styles.borderBottom} />
 			</ScrollView>
