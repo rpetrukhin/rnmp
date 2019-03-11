@@ -9,11 +9,11 @@ import {
 	LayoutAnimation,
 	Animated,
 	Vibration,
-	AsyncStorage,
 } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
 import { Sentry } from 'react-native-sentry';
 import { connect } from 'react-redux';
+import * as Keychain from 'react-native-keychain';
 
 import CustomText from '../components/CustomText';
 import CustomTextAnimated from '../components/CustomTextAnimated';
@@ -44,10 +44,8 @@ class Login extends Component {
 
 	async componentDidMount() {
 		try {
-			const credentials = JSON.parse(
-				await AsyncStorage.getItem('@ShopStore:credentials')
-			);
-			if (credentials !== null) {
+			const credentials = await Keychain.getGenericPassword();
+			if (credentials) {
 				this.setState({
 					email: credentials.username,
 					password: credentials.password,
@@ -213,10 +211,7 @@ class Login extends Component {
 
 			if (!data.message) {
 				try {
-					await AsyncStorage.setItem(
-						'@ShopStore:credentials',
-						JSON.stringify(body)
-					);
+					await Keychain.setGenericPassword(body.username, body.password);
 				} catch (err) {}
 
 				Sentry.setUserContext({ username: body.username });
