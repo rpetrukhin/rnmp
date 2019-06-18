@@ -11,6 +11,7 @@
     "react": "16.6.1",
     "react-native": "0.57.7",
     "react-native-gesture-handler": "1.0.10",
+    "react-native-keychain": "3.0.0",
     "react-native-push-notification": "^3.1.2",
     "react-native-sentry": "^0.42.0",
     "react-native-splash-screen": "^3.1.1",
